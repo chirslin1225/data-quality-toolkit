@@ -29,7 +29,7 @@ Note the ordering: the single most expensive row is not the largest count. `firm
 ## Quickstart
 
 ```bash
-git clone https://github.com/<your-username>/data-quality-toolkit.git
+git clone https://github.com/chirslin1225/data-quality-toolkit.git
 cd data-quality-toolkit
 python -m dqkit examples/sample_sensor_data.csv
 ```
