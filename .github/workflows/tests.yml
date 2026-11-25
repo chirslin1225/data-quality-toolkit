@@ -12,7 +12,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.12"]
+        # 3.9 and 3.10 are end-of-life and no longer available on the default
+        # ubuntu-latest image, so they cannot be tested here even though the
+        # code itself would still run on them.
+        python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

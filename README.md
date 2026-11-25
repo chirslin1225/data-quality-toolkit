@@ -44,7 +44,7 @@ cd data-quality-toolkit
 python -m dqkit examples/sample_sensor_data.csv
 ```
 
-No dependencies. Python 3.9+.
+No dependencies. Python 3.9+ (CI runs 3.11, 3.12 and 3.13 — 3.9 and 3.10 are end-of-life and no longer installable on the default runner image).
 
 Run the tests:
 
