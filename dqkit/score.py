@@ -67,25 +67,6 @@ def interpret(value):
     return "do not train on this without repair"
 
 
-# ---------------------------------------------------------------------------
-# Planned.
-# ---------------------------------------------------------------------------
+# The interval around this score lives in ``dqkit/uncertainty.py`` — it needs
+# the rows themselves, not just the findings, so it does not belong here.
 
-def estimate_uncertainty(findings, n_rows, sample_rows=None, iterations=200,
-                         costs=None):
-    """Confidence interval for :func:`score` when the file is too big to scan fully.
-
-    TODO: implement. Intended behaviour:
-      * Draw ``iterations`` bootstrap samples of ``sample_rows`` rows each
-        (default: something like 10% of the file, floor 1000).
-      * Recompute the score for each sample.
-      * Return ``(point_estimate, lower_p05, upper_p95)``.
-
-    The hard part is not the bootstrap, it is deciding what "uncertain" means
-    here: sampling error in the rate estimate, or the possibility that the
-    defect mechanism is *not* independent across rows (it rarely is — a broken
-    sensor fails in runs, not at random). A row-level bootstrap assumes
-    independence and will understate the true spread. If you implement this,
-    say so in the README, and consider a block bootstrap keyed on time or device.
-    """
-    raise NotImplementedError

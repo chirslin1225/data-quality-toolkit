@@ -20,9 +20,14 @@ import random
 COLUMNS = ["timestamp", "device_id", "frame_seq", "pressure_kpa",
            "accel_x", "accel_y", "accel_z", "firmware"]
 
-MISSING_RATE = 0.082      # pressure_kpa dropouts, as in the README example
+MISSING_RATE = 0.082      # pressure_kpa dropouts
 DUPLICATES = 38           # exact duplicate rows
 GAPS = 3                  # long timestamp outages
+BAD_VALUES = 6            # non-numeric junk in a numeric column
+BAD_TIMES = 2             # unparseable timestamps
+OUTLIERS = 12             # values far outside the IQR fence
+
+JUNK = ["ERR", "-", "n/a", "NULL", "?", "98.6 kPa"]
 
 
 def build(rows=5000, seed=7):
@@ -47,9 +52,23 @@ def build(rows=5000, seed=7):
         })
         t += step
 
-    # missing values in one column
-    for r in rnd.sample(data, int(len(data) * MISSING_RATE)):
+    # dropouts
+    missing_rows = rnd.sample(data, int(len(data) * MISSING_RATE))
+    for r in missing_rows:
         r["pressure_kpa"] = ""
+
+    # junk in a numeric column: counts as a type error, not as a missing value
+    pool = [r for r in data if r["pressure_kpa"]]
+    for r in rnd.sample(pool, BAD_VALUES):
+        r["pressure_kpa"] = rnd.choice(JUNK)
+
+    # unparseable timestamps
+    for r in rnd.sample(data, BAD_TIMES):
+        r["timestamp"] = "n/a"
+
+    # gross outliers, well outside the IQR fence
+    for r in rnd.sample(pool, OUTLIERS):
+        r["pressure_kpa"] = rnd.choice(["41.200", "182.900"])
 
     # duplicate rows, appended so the originals survive
     for r in rnd.sample(data, DUPLICATES):
@@ -72,8 +91,9 @@ def main():
         w.writeheader()
         w.writerows(data)
     print(f"wrote {len(data):,} rows x {len(COLUMNS)} cols -> {args.out}")
-    print(f"  {GAPS} injected timestamp gaps, {DUPLICATES} duplicate rows, "
-          f"~{MISSING_RATE:.1%} missing pressure_kpa, 1 constant column")
+    print(f"  injected: {GAPS} timestamp gaps, {DUPLICATES} duplicate rows, "
+          f"~{MISSING_RATE:.1%} missing pressure_kpa, {BAD_VALUES} junk values, "
+          f"{BAD_TIMES} unparseable timestamps, {OUTLIERS} outliers, 1 constant column")
 
 
 if __name__ == "__main__":
